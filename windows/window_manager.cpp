@@ -558,13 +558,14 @@ bool WindowManager::IsResizable() {
 
 void WindowManager::SetResizable(const flutter::EncodableMap& args) {
   HWND hWnd = GetMainWindow();
-  is_resizable_ =
-      std::get<bool>(args.at(flutter::EncodableValue("isResizable")));
+  DWORD originalStyle = GetWindowLong(hWnd, GWL_STYLE);
+  is_resizable_ = std::get<bool>(args.at(flutter::EncodableValue("isResizable")));
   DWORD gwlStyle = GetWindowLong(hWnd, GWL_STYLE);
   if (is_resizable_) {
     gwlStyle |= WS_THICKFRAME;
   } else {
     gwlStyle &= ~WS_THICKFRAME;
+    originalStyle = gwlStyle;
   }
   ::SetWindowLong(hWnd, GWL_STYLE, gwlStyle);
 }
